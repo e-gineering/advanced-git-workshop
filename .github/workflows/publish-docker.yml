@@ -26,8 +26,10 @@ jobs:
         with: 
           password: "${{ secrets.DOCKER_PASSWORD }}"
           username: "${{ secrets.DOCKER_USERNAME }}"
+
+
       - 
-        id: meta
+        id: meta-common
         name: "Extract metadata (tags, labels) for Docker"
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with: 
@@ -37,7 +39,41 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with: 
           context: "."
-          labels: "${{ steps.meta.outputs.labels }}"
+          labels: "${{ steps.meta-common.outputs.labels }}"
           push: true
-          tags: "${{ steps.meta.outputs.tags }}"
+          tags: "${{ steps.meta-common.outputs.tags }}"
           file: "Dockerfile.common"
+
+
+      - 
+        id: meta-split-commit
+        name: "Extract metadata (tags, labels) for Docker"
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with: 
+          images: allanmoso/gitworkshop-split-commit 
+      - 
+        name: "Build and push Docker image"
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with: 
+          context: "."
+          labels: "${{ steps.meta-split-commit.outputs.labels }}"
+          push: true
+          tags: "${{ steps.meta-split-commit.outputs.tags }}"
+          file: "Dockerfile.split-commit"
+
+
+      - 
+        id: meta-push-conflict
+        name: "Extract metadata (tags, labels) for Docker"
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with: 
+          images: allanmoso/gitworkshop-push-conflict 
+      - 
+        name: "Build and push Docker image"
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with: 
+          context: "."
+          labels: "${{ steps.meta-push-conflict.outputs.labels }}"
+          push: true
+          tags: "${{ steps.meta-push-conflict.outputs.tags }}"
+          file: "Dockerfile.push-conflict"
