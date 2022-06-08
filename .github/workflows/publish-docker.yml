@@ -7,6 +7,9 @@ on:
     types: [published]
   pull_request:
     types: [opened, edited, reopened, synchronize]
+  push:
+    branches:
+      - 'main'
 
 jobs: 
 
