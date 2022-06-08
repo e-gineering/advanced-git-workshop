@@ -1,0 +1,5 @@
+FROM allanmoso/gitworkshop-common:main
+
+RUN git checkout -b split-commit-exercise
+RUN echo 'Middle line' > split.txt && git add split.txt && git commit -m 'Initial state for split commit exercise.'
+RUN echo -e "First line\n$(cat split.txt)" > split.txt && echo "Last line" >> split.txt
