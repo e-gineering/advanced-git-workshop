@@ -77,3 +77,19 @@ jobs:
           push: true
           tags: "${{ steps.meta-push-conflict.outputs.tags }}"
           file: "Dockerfile.push-conflict"
+
+      - 
+        id: meta-merge-conflict
+        name: "Extract metadata (tags, labels) for Docker"
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with: 
+          images: allanmoso/gitworkshop-merge-conflict 
+      - 
+        name: "Build and push Docker image"
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with: 
+          context: "."
+          labels: "${{ steps.meta-merge-conflict.outputs.labels }}"
+          push: true
+          tags: "${{ steps.meta-merge-conflict.outputs.tags }}"
+          file: "Dockerfile.merge-conflict"
