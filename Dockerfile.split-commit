@@ -1,4 +1,4 @@
-FROM allanmoso/gitworkshop-common:main
+FROM ghcr.io/egineering-llc/gitworkshop-common
 
 RUN git checkout -b split-commit-exercise
 RUN echo 'Middle line' > split.txt && git add split.txt && git commit -m 'Initial state for split commit exercise.'

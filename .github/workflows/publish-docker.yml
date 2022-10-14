@@ -1,95 +1,51 @@
---- 
+---
+name: Publish Docker images
 
-name: "Publish Docker image"
-
-on: 
-  release: 
-    types: [published]
-  pull_request:
-    types: [opened, edited, reopened, synchronize]
+on:
   push:
     branches:
-      - 'main'
+      - main
+  workflow_dispatch:
 
-jobs: 
+env:
+  IMAGE_REGISTRY_USERNAME: ${{ github.repository_owner }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
-  push_to_registry: 
-    name: "Push Docker image to Docker Hub"
+jobs:
+  push_to_registry:
+    name: Build and push Docker images
     runs-on: ubuntu-latest
-    steps: 
-      - 
-        name: "Check out the repo"
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Check out the repo
         uses: actions/checkout@v3
-      - 
-        name: "Log in to Docker Hub"
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with: 
-          password: "${{ secrets.DOCKER_PASSWORD }}"
-          username: "${{ secrets.DOCKER_USERNAME }}"
 
+      - name: Log in to Github Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login $IMAGE_REGISTRY -u $IMAGE_REGISTRY_USERNAME --password-stdin
 
-      - 
-        id: meta-common
-        name: "Extract metadata (tags, labels) for Docker"
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with: 
-          images: allanmoso/gitworkshop-common 
-      - 
-        name: "Build and push Docker image"
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with: 
-          context: "."
-          labels: "${{ steps.meta-common.outputs.labels }}"
-          push: true
-          tags: "${{ steps.meta-common.outputs.tags }}"
-          file: "Dockerfile.common"
+      - name: Build and push images
+        run: |
+          # Get the Dockerfile name with no path
+          DOCKERFILES=$(find . -name 'Dockerfile.*' | xargs --max-lines=1 basename)
 
+          echo "
+          Building the following Dockerfiles:
+          $DOCKERFILES
+          "
 
-      - 
-        id: meta-split-commit
-        name: "Extract metadata (tags, labels) for Docker"
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with: 
-          images: allanmoso/gitworkshop-split-commit 
-      - 
-        name: "Build and push Docker image"
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with: 
-          context: "."
-          labels: "${{ steps.meta-split-commit.outputs.labels }}"
-          push: true
-          tags: "${{ steps.meta-split-commit.outputs.tags }}"
-          file: "Dockerfile.split-commit"
+          for DOCKERFILE in $DOCKERFILES; do
 
+            # Make an image name like: gitworkshop-push-conflict
+            IMAGE_NAME=gitworkshop-$(echo $DOCKERFILE | cut -d . -f 2)
 
-      - 
-        id: meta-push-conflict
-        name: "Extract metadata (tags, labels) for Docker"
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with: 
-          images: allanmoso/gitworkshop-push-conflict 
-      - 
-        name: "Build and push Docker image"
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with: 
-          context: "."
-          labels: "${{ steps.meta-push-conflict.outputs.labels }}"
-          push: true
-          tags: "${{ steps.meta-push-conflict.outputs.tags }}"
-          file: "Dockerfile.push-conflict"
+            echo "🛠️ Building and pushing an image made from the Dockerfile: $DOCKERFILE"
+            docker buildx build \
+              --file $DOCKERFILE -t $IMAGE_REGISTRY/$IMAGE_NAME \
+              --platform linux/arm64,linux/amd64 \
+              --push \
+              --tag $FULL_IMAGE_TAG \
+              .
 
-      - 
-        id: meta-merge-conflict
-        name: "Extract metadata (tags, labels) for Docker"
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with: 
-          images: allanmoso/gitworkshop-merge-conflict 
-      - 
-        name: "Build and push Docker image"
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with: 
-          context: "."
-          labels: "${{ steps.meta-merge-conflict.outputs.labels }}"
-          push: true
-          tags: "${{ steps.meta-merge-conflict.outputs.tags }}"
-          file: "Dockerfile.merge-conflict"
+          done
