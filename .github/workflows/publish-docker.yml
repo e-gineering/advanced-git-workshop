@@ -42,10 +42,10 @@ jobs:
 
             echo "🛠️ Building and pushing an image made from the Dockerfile: $DOCKERFILE"
             docker buildx build \
-              --file $DOCKERFILE -t $IMAGE_REGISTRY/$IMAGE_NAME \
+              --file $DOCKERFILE \
               --platform linux/arm64,linux/amd64 \
               --push \
-              --tag $FULL_IMAGE_TAG \
+              --tag $IMAGE_REGISTRY/$IMAGE_NAME \
               .
 
           done
