@@ -1,23 +1,12 @@
 FROM allanmoso/gitworkshop-common:main
 
-RUN git checkout -b merge-conflict \
+RUN git checkout main \
     && echo 'Middle line' > conflict.txt \
     && git add conflict.txt \
     && git commit -m 'Initial state for conflict commit exercise.' \
-    && git push -u origin merge-conflict \
-    && echo -e "First line\n$(cat conflict.txt)" > conflict.txt && echo "Last line" >> conflict.txt
-
-RUN cd .. \
-    && git clone ./git-workshop.git git-workshop-merger \
-    && cd git-workshop-merger \
-    && git fetch --all \
+    && git push origin main \
+    && git checkout -b merge-conflict \
     && git checkout main \
-    && git merge origin/merge-conflict \
-    && git push origin main 
-
-RUN cd .. \
-    && git clone ./git-workshop.git git-workshop-conflict \
-    && cd git-workshop-conflict \
     && git checkout -b another-branch\
     && echo -e "Line 1\n$(cat conflict.txt)" > conflict.txt && echo "Line 3" >> conflict.txt \
     && git add conflict.txt \
@@ -25,11 +14,11 @@ RUN cd .. \
     && git push origin another-branch \
     && git checkout main \
     && git merge origin/another-branch \
-    && git push origin main 
-
-RUN cd .. \
-    && cd git-workshop-merger \
-    && git fetch --all \
-    && git checkout main \
-    && git pull
+    && git push origin main \
+    && git checkout merge-conflict \
+    && echo -e "First line\n$(cat conflict.txt)" > conflict.txt && echo "Last line" >> conflict.txt \
+    && git add conflict.txt \
+    && git commit -m 'Added First line and Last line.' \
+    && git push origin merge-conflict \
+    && git checkout main
 
