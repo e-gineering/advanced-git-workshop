@@ -28,7 +28,7 @@ jobs:
       - name: Build and push images
         run: |
           # Get the Dockerfile name with no path
-          DOCKERFILES=$(find . -name 'Dockerfile.*' | xargs --max-lines=1 basename)
+          DOCKERFILES=$(find . -name 'Dockerfile.*' | xargs --max-lines=1 basename | sort)
 
           echo "
           Building the following Dockerfiles:
