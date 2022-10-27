@@ -27,8 +27,9 @@ jobs:
 
       - name: Build and push images
         run: |
-          # Get the Dockerfile name with no path
-          DOCKERFILES=$(find . -name 'Dockerfile.*' | xargs --max-lines=1 basename | sort)
+          # Get the Dockerfile name with path, without the leading `./`
+          # Example: push-conflict/Dockerfile
+          DOCKERFILES=$(find . -name Dockerfile | sort | sed 's|^./||')
 
           echo "
           Building the following Dockerfiles:
@@ -37,15 +38,28 @@ jobs:
 
           for DOCKERFILE in $DOCKERFILES; do
 
-            # Make an image name like: gitworkshop-push-conflict
-            IMAGE_NAME=gitworkshop-$(echo $DOCKERFILE | cut -d . -f 2)
+            # Make an image name in the form: gitworkshop-push-conflict
+            # If the path to the Dockerfile includes a slash, then it's the common image.
+            if echo $DOCKERFILE | grep /; then
+              SCENARIO=$(echo $DOCKERFILE | cut -d / -f 1)
+              IMAGE_NAME=gitworkshop-$SCENARIO
+            else
+              IMAGE_NAME=gitworkshop-common
+            fi
 
-            echo "🛠️ Building and pushing an image made from the Dockerfile: $DOCKERFILE"
+            TAG=$IMAGE_REGISTRY/$IMAGE_NAME
+
+            echo "
+              Building and pushing an image made with:
+                🐋 Dockerfile: $DOCKERFILE
+                🏷️ Tag:        $TAG
+            "
+
             docker buildx build \
               --file $DOCKERFILE \
               --platform linux/arm64,linux/amd64 \
               --push \
-              --tag $IMAGE_REGISTRY/$IMAGE_NAME \
+              --tag $TAG \
               .
 
           done
