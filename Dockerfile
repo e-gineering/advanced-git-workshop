@@ -20,7 +20,7 @@ RUN <<EOF
 
   # Get our git config set up
   git config --global init.defaultBranch main
-  git config --global user.name Workshop Participant
+  git config --global user.name "Workshop Participant"
   git config --global user.email workshop_participant@workshop.e-gineering.com
   git config --global pull.rebase false
 
