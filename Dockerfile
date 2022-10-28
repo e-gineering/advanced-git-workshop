@@ -11,8 +11,10 @@ RUN <<EOF
     bash \
     bash-completion \
     git \
+    git-doc \
     git-perl \
     less \
+    mandoc \
     vim
 
   # Make the command prompt in bash show the working directory instead of `bash-5.1`
