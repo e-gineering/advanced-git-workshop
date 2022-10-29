@@ -11,8 +11,10 @@ RUN <<EOF
     bash \
     bash-completion \
     git \
+    git-doc \
     git-perl \
     less \
+    mandoc \
     vim
 
   # Make the command prompt in bash show the working directory instead of `bash-5.1`
@@ -20,7 +22,7 @@ RUN <<EOF
 
   # Get our git config set up
   git config --global init.defaultBranch main
-  git config --global user.name Workshop Participant
+  git config --global user.name "Workshop Participant"
   git config --global user.email workshop_participant@workshop.e-gineering.com
   git config --global pull.rebase false
 

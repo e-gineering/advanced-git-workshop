@@ -27,4 +27,4 @@ index 3ea4248..3988358 100644
 
 The goal is to make two separate commits:
 * With just the `First line` change
-* With just the `Second line` change
+* With just the `Last line` change

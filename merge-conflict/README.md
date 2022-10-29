@@ -21,10 +21,10 @@ You should see a conflict error.
 The goal is to be able to merge the branch successfully by resolving the conflict.
 
 Preferrably you want to end with a file that looks like below:
-```diff
-+First line
-+Line 2
- Middle line
-+Line 4
-+Last line
+```
+First line
+Line 2
+Middle line
+Line 4
+Last line
 ```
