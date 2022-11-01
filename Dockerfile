@@ -6,7 +6,8 @@ RUN <<EOF
 
   # Install some packages
   #   less: installing the GNU less instead of the busybox less, to show colors in the `git diff` output
-  #   git-perl: for interactive git commands to work
+  #   git-perl: getting the interactive git commands to work
+  #   mandoc & git-doc: installing the man pages for git
   apk add --no-cache \
     bash \
     bash-completion \
