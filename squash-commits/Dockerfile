@@ -47,4 +47,7 @@ RUN <<EOF
   # Push up our branch, so we will need to force-push to get the remote updated after squashing
   git push -u origin HEAD
 
+  # Save 300 MB or so
+  rm -rf node_modules
+
 EOF
